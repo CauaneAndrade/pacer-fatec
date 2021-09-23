@@ -187,8 +187,8 @@ window.onload = async function () {
 
   const updateData = async () => {
     ctx.style.display = "none";
-    myChartPolar.style.display = "none";
-    myChartPie.style.display = "none";
+    ctxPolar.style.display = "none";
+    ctxPie.style.display = "none";
     var alunoOpt = alunoSelect.options[alunoSelect.selectedIndex].value;
     dataset["data"] = await getData(alunoOpt);
     myChart.update();
@@ -201,8 +201,8 @@ window.onload = async function () {
 
   const updateDataGrupo = async () => {
     ctx.style.display = "none";
-    myChartPolar.style.display = "none";
-    myChartPie.style.display = "none";
+    ctxPolar.style.display = "none";
+    ctxPie.style.display = "none";
     var grupoOpt = grupoSelect.options[grupoSelect.selectedIndex].value;
     let aluno = getAlunos(grupoOpt)[0];
     dataset["data"] = await getData(aluno);
