@@ -1,33 +1,79 @@
+
 window.onload = async function () {
+  g1Label = "Grupo 1";
+  const g1 = [
+    "Gabriel Borges (SM)",
+    "Isabelle Oliveira (PO)",
+    "Gabriel Mendes",
+    "Gustavo Lopes",
+    "Samuel Costa",
+    "Victoria Ribeiro",
+  ];
+  
+  g2Label = "Grupo 2";
+  const g2 = [
+    "Vitor L. Amorim (SM)",
+    "Eduardo F. R. Querido (PO)",
+    "Douglas H. T. Barboza",
+    "Fabrício C. Vasconcellos",
+    "Jonatas R. Ferreira",
+    "Rafael R. Rodrigues",
+    "Samuel D. Xavier",
+  ];
+  
+  g3Label = "Grupo 3";
+  const g3 = [
+    "Tábatha Fróes (SM)",
+    "Natália dos Reis Neves (PO)",
+    "Ângelo Lima",
+    "Caique Fernandes",
+    "José Henrique dos Santos",
+    "Larissa Miho Takahashi",
+    "Matheus Henrique Rothstein Vieira",
+    "Renato Passos",
+    "Sandro Toline de Oliveira Junior",
+  ];
+  
+  g4Label = "Grupo 4";
+  const g4 = [
+    "Christian Dantas (Master)",
+    "Jennifer Dominique (PO)",
+    "Brendo Bubela",
+    "Bruna Gomes",
+    "Davi Ramos",
+    "Luara Cristine Goulart",
+    "Mariana Araújo",
+    "Marcos",
+    "Joao",
+  ];
+  
+  var grupoAlunoData = {
+    "Grupo 1": g1,
+    "Grupo 2": g2,
+    "Grupo 3": g3,
+    "Grupo 4": g4,
+  };
+  
+  const grupos = [g1Label, g2Label, g3Label, g4Label];
   const alunoSelect = document.getElementById("aluno");
   const grupoSelect = document.getElementById("grupo");
 
-  function getGrupo() {
-    let data = ["Grupo 1", "Grupo 2"];
-    return data;
+  function getAlunos(grupo) {
+    if (grupo) {
+      return grupoAlunoData[grupo]; // list
+    }
+    return grupoAlunoData; // {}
   }
 
-  function getAlunos(grupo = "Grupo 1") {
-    var dic = {
-      "Grupo 1": ["Aluno 1", "Aluno 2", "Aluno 3", "Aluno 4"],
-      "Grupo 2": ["Aluno 1.2", "Aluno 2.2", "Aluno 3.2", "Aluno 4.2"],
-    };
-    return dic[grupo];
-  }
-
-  let grupos = getGrupo();
-  let alunos = getAlunos();
-
-  function buildSelectValues(selectElement, dataList) {
-    selectElement.innerHTML = "";
+  function buildSelectValues(selectElement, dataList, extraData='') {
+    selectElement.innerHTML = extraData;
     for (var i = 0; i < dataList.length; i++) {
-      selectElement.innerHTML =
-        selectElement.innerHTML +
-        `<option value="${dataList[i]}"> ${dataList[i]} </option>`;
+      selectElement.innerHTML += `<option value="${dataList[i]}"> ${dataList[i]} </option>`;
     }
   }
 
   async function feedDataSelect() {
+    let alunos = await getAlunos(g1Label);
     buildSelectValues(grupoSelect, grupos);
     buildSelectValues(alunoSelect, alunos);
   }
@@ -38,11 +84,9 @@ window.onload = async function () {
     buildSelectValues(alunoSelect, alunos);
   }
 
-  async function getData(alunoOpt) {
-    // const api = fetch("https://sheetsu.com/apis/v1.0bu/07ss686c9d8a31");
+  async function getData() {
     const api = fetch("https://sheetsu.com/apis/v1.0bu/07686c9d8a31");
     let data = {};
-    let result = [];
     await api
       .then((response) => {
         return response.json();
@@ -50,42 +94,49 @@ window.onload = async function () {
       .then((raw) => {
         for (let i = 0; i < raw.length; i++) {
           for (const [key, value] of Object.entries(raw[i])) {
-            if (key.endsWith(`[${alunoOpt}]`)) {
-              if (data[key]) {
-                data[key] += parseInt(value);
-              } else {
-                data[key] = parseInt(value);
-              }
+            var nota = parseInt(value) || 0;
+            if (data[key]) {
+              data[key] += nota;
+            } else {
+              data[key] = nota;
             }
           }
         }
-        for (const [key, value] of Object.entries(data)) {
-          result.push(value / getAlunos(grupos[0]).length);
-        }
       });
-    // result = [4, 5, 4, 4];
+    return data;
+  }
+
+  function getGrupoAluno(alunoNome) {
+    // return a list
+    var dic = getAlunos();
+    for (const [key, value] of Object.entries(dic)) {
+      if (value.includes(alunoNome)) {
+        return value;
+      }
+    }
+  }
+
+  function filterData(data, alunoNome) {
+    /*
+    data -> {} (itens da avaliação e nota)
+    alunoNome -> ''
+    */
+   let result = [];
+    let grupoAluno = getGrupoAluno(alunoNome);
+    for (const [key, value] of Object.entries(data)) {
+      if (key.endsWith(`[${alunoNome}]`)) {
+        result.push(value / grupoAluno.length);
+      }
+    }
     return result;
   }
 
   await feedDataSelect();
-
+  let dataValores = await getData();
   var valorInicialAluno = getAlunos(grupos[0])[0];
-  let lista = await getData(valorInicialAluno);
-  var dataset = {
-    backgroundColor: ["rgba(48, 48, 181, 0.2)"],
-    borderColor: ["rgba(48, 48, 181, 0.7)"],
-    pointBackgroundColor: [
-      "rgba(234, 0, 0, 1)",
-      "rgba(255, 255, 0, 1)",
-      "rgba(48, 255, 0, 1)",
-      "rgba(0, 0, 255, 1)",
-    ],
-    borderWidth: 1,
-    data: lista,
-    label: "Resultado",
-  };
+  let lista = filterData(dataValores, valorInicialAluno);
 
-  var dataset1 = {
+  var dataset = {
     backgroundColor: [
       "rgba(234, 0, 0, 0.2)",
       "rgba(255, 255, 0, 0.2)",
@@ -103,40 +154,19 @@ window.onload = async function () {
     label: "Resultado",
   };
 
-  const config = {
-    type: "radar",
-    data: {
-      labels: [
-        "PROATIVIDADE",
-        "AUTONOMIA",
-        "COLABORAÇÃO",
-        "ENTREGA DE RESULTADOS",
-      ],
-      datasets: [dataset],
-    },
-    options: {
-      plugins: {
-        legend: false,
-        tooltip: true,
-        title: {
-          display: true,
-          text: "Radar Chart",
-        },
-      },
-    },
+  dataDataset = {
+    labels: [
+      "PROATIVIDADE",
+      "AUTONOMIA",
+      "COLABORAÇÃO",
+      "ENTREGA DE RESULTADOS",
+    ],
+    datasets: [dataset],
   };
 
-  const config2 = {
+  const config = {
     type: "polarArea",
-    data: {
-      labels: [
-        "PROATIVIDADE",
-        "AUTONOMIA",
-        "COLABORAÇÃO",
-        "ENTREGA DE RESULTADOS",
-      ],
-      datasets: [dataset1],
-    },
+    data: dataDataset,
     options: {
       responsive: true,
       plugins: {
@@ -151,67 +181,26 @@ window.onload = async function () {
     },
   };
 
-  const config3 = {
-    type: "pie",
-    data: {
-      labels: [
-        "PROATIVIDADE",
-        "AUTONOMIA",
-        "COLABORAÇÃO",
-        "ENTREGA DE RESULTADOS",
-      ],
-      datasets: [dataset1],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "top",
-        },
-        title: {
-          display: true,
-          text: "Pie Chart",
-        },
-      },
-    },
-  };
-
-  const ctx = document.getElementById("chart");
-  const myChart = new Chart(ctx, config);
-
   const ctxPolar = document.getElementById("chartPolar");
-  const myChartPolar = new Chart(ctxPolar, config2);
-
-  const ctxPie = document.getElementById("chartPie");
-  const myChartPie = new Chart(ctxPie, config3);
+  const chartPolar = new Chart(ctxPolar, config);
 
   const updateData = async () => {
-    ctx.style.display = "none";
     ctxPolar.style.display = "none";
-    ctxPie.style.display = "none";
     var alunoOpt = alunoSelect.options[alunoSelect.selectedIndex].value;
-    dataset["data"] = await getData(alunoOpt);
-    myChart.update();
-    myChartPolar.update();
-    myChartPie.update();
-    ctx.style.display = "block";
+    let lista = filterData(dataValores, alunoOpt);
+    dataset["data"] = lista;
+    chartPolar.update();
     ctxPolar.style.display = "block";
-    ctxPie.style.display = "block";
   };
 
   const updateDataGrupo = async () => {
-    ctx.style.display = "none";
     ctxPolar.style.display = "none";
-    ctxPie.style.display = "none";
     var grupoOpt = grupoSelect.options[grupoSelect.selectedIndex].value;
     let aluno = getAlunos(grupoOpt)[0];
-    dataset["data"] = await getData(aluno);
-    myChart.update();
-    myChartPolar.update();
-    myChartPie.update();
-    ctx.style.display = "block";
+    let lista = filterData(dataValores, aluno);
+    dataset["data"] = lista;
+    chartPolar.update();
     ctxPolar.style.display = "block";
-    ctxPie.style.display = "block";
   };
 
   alunoSelect.addEventListener("change", updateData);
