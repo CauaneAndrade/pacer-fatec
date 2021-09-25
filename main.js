@@ -64,15 +64,30 @@ window.onload = async function () {
     return grupoAlunoData; // {}
   }
 
+  function addElementHtml(id, mainDiv, extra) {
+    var div = document.createElement("div");
+    div.style.width = "25%";
+    div.style.display = "inline-block";
+    var innerDiv = document.createElement("canvas");
+    innerDiv.id = id;
+    if (extra) {
+      var titleAluno = document.createElement("h3");
+      titleAluno.innerHTML = extra;
+      titleAluno.style.textAlign = 'center';
+      div.appendChild(titleAluno);
+    }
+    div.appendChild(innerDiv);
+    mainDiv.appendChild(div);
+  }
+
   function addChartsDinamically(grupoAlunos) {
     let ids = [];
-    var div = document.getElementById("main");
-    div.innerHTML = "";
-    for (let i = 0; i <= grupoAlunos.length; i++) {
-      var innerDiv = document.createElement("canvas");
-      innerDiv.id = `dynamically-id-${i}`;
-      ids.push(innerDiv.id);
-      div.appendChild(innerDiv);
+    var mainDiv = document.getElementById("main");
+    mainDiv.innerHTML = "";
+    for (let i = 0; i < grupoAlunos.length; i++) {
+      let id = `dynamically-id-${i}`;
+      ids.push(id);
+      addElementHtml(id, mainDiv, grupoAlunos[i]);
     }
     return ids;
   }
@@ -87,13 +102,15 @@ window.onload = async function () {
   async function feedDataSelect() {
     let alunos = await getAlunos(g1Label);
     buildSelectValues(grupoSelect, grupos);
-    buildSelectValues(alunoSelect, alunos);
+    extra = `<option value="todos"> Todos </option>`;
+    buildSelectValues(alunoSelect, alunos, extra);
   }
 
   function feedAluno() {
     var grupoOpt = grupoSelect.options[grupoSelect.selectedIndex].value;
     let alunos = getAlunos(grupoOpt);
-    buildSelectValues(alunoSelect, alunos);
+    extra = `<option value="todos"> Todos </option>`;
+    buildSelectValues(alunoSelect, alunos, extra);
   }
 
   async function getData() {
@@ -189,25 +206,34 @@ window.onload = async function () {
           position: "top",
         },
         title: {
-          display: true,
-          text: "Polar Area Chart",
+          display: true
         },
       },
     },
   };
 
   const config = { ...globalConfig, data: dataConfig };
-
   const ctxPolar = document.getElementById("chartPolar");
   const chartPolar = new Chart(ctxPolar, config);
+  ctxPolar.style.display = "none";
+  addChartAlunosGrupo(g1Label);
 
   const updateData = async () => {
     ctxPolar.style.display = "none";
+    var grupoOpt = grupoSelect.options[grupoSelect.selectedIndex].value;
     var alunoOpt = alunoSelect.options[alunoSelect.selectedIndex].value;
-    let dataToDataset = filterData(dataValores, alunoOpt);
-    dataset["data"] = dataToDataset;
-    chartPolar.update();
-    ctxPolar.style.display = "block";
+
+    var mainDiv = document.getElementById("main");
+    mainDiv.innerHTML = "";
+    if (alunoOpt === "todos") {
+      addChartAlunosGrupo(grupoOpt);
+    } else {
+      globalConfig['options']['plugins']['title']['text'] = alunoOpt;
+      let dataToDataset = filterData(dataValores, alunoOpt);
+      dataset["data"] = dataToDataset;
+      chartPolar.update();
+      ctxPolar.style.display = "block";
+    }
   };
 
   function addChartAlunosGrupo(grupo) {
@@ -219,7 +245,8 @@ window.onload = async function () {
         labels: globalLabel,
         datasets: [{ ...globalDataset, data: dataToDataset }],
       };
-      const locaConfig = { ...globalConfig, data: localData };
+      globalConfig['options']['plugins']['title']['text'] = '';
+      let locaConfig = { ...globalConfig, data: localData };
       const ctx = document.getElementById(idElement);
       new Chart(ctx, locaConfig);
     });
@@ -228,11 +255,6 @@ window.onload = async function () {
   const updateDataGrupo = async () => {
     ctxPolar.style.display = "none";
     var grupoOpt = grupoSelect.options[grupoSelect.selectedIndex].value;
-    let aluno = getAlunos(grupoOpt)[0];
-    let dataToDataset = filterData(dataValores, aluno);
-    dataset["data"] = dataToDataset;
-    chartPolar.update();
-    ctxPolar.style.display = "block";
     addChartAlunosGrupo(grupoOpt);
   };
 
