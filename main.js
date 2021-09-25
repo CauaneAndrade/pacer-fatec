@@ -1,4 +1,3 @@
-
 window.onload = async function () {
   g1Label = "Grupo 1";
   const g1 = [
@@ -9,7 +8,7 @@ window.onload = async function () {
     "Samuel Costa",
     "Victoria Ribeiro",
   ];
-  
+
   g2Label = "Grupo 2";
   const g2 = [
     "Vitor L. Amorim (SM)",
@@ -20,7 +19,7 @@ window.onload = async function () {
     "Rafael R. Rodrigues",
     "Samuel D. Xavier",
   ];
-  
+
   g3Label = "Grupo 3";
   const g3 = [
     "Tábatha Fróes (SM)",
@@ -33,7 +32,7 @@ window.onload = async function () {
     "Renato Passos",
     "Sandro Toline de Oliveira Junior",
   ];
-  
+
   g4Label = "Grupo 4";
   const g4 = [
     "Christian Dantas (Master)",
@@ -46,14 +45,14 @@ window.onload = async function () {
     "Marcos",
     "Joao",
   ];
-  
+
   var grupoAlunoData = {
     "Grupo 1": g1,
     "Grupo 2": g2,
     "Grupo 3": g3,
     "Grupo 4": g4,
   };
-  
+
   const grupos = [g1Label, g2Label, g3Label, g4Label];
   const alunoSelect = document.getElementById("aluno");
   const grupoSelect = document.getElementById("grupo");
@@ -65,7 +64,20 @@ window.onload = async function () {
     return grupoAlunoData; // {}
   }
 
-  function buildSelectValues(selectElement, dataList, extraData='') {
+  function addChartsDinamically(grupoAlunos) {
+    let ids = [];
+    var div = document.getElementById("main");
+    div.innerHTML = "";
+    for (let i = 0; i <= grupoAlunos.length; i++) {
+      var innerDiv = document.createElement("canvas");
+      innerDiv.id = `dynamically-id-${i}`;
+      ids.push(innerDiv.id);
+      div.appendChild(innerDiv);
+    }
+    return ids;
+  }
+
+  function buildSelectValues(selectElement, dataList, extraData = "") {
     selectElement.innerHTML = extraData;
     for (var i = 0; i < dataList.length; i++) {
       selectElement.innerHTML += `<option value="${dataList[i]}"> ${dataList[i]} </option>`;
@@ -121,7 +133,7 @@ window.onload = async function () {
     data -> {} (itens da avaliação e nota)
     alunoNome -> ''
     */
-   let result = [];
+    let result = [];
     let grupoAluno = getGrupoAluno(alunoNome);
     for (const [key, value] of Object.entries(data)) {
       if (key.endsWith(`[${alunoNome}]`)) {
@@ -134,9 +146,9 @@ window.onload = async function () {
   await feedDataSelect();
   let dataValores = await getData();
   var valorInicialAluno = getAlunos(grupos[0])[0];
-  let lista = filterData(dataValores, valorInicialAluno);
+  let dataToDataset = filterData(dataValores, valorInicialAluno);
 
-  var dataset = {
+  const globalDataset = {
     backgroundColor: [
       "rgba(234, 0, 0, 0.2)",
       "rgba(255, 255, 0, 0.2)",
@@ -150,23 +162,26 @@ window.onload = async function () {
       "rgba(0, 0, 255, 1)",
     ],
     borderWidth: 1,
-    data: lista,
     label: "Resultado",
   };
 
-  dataDataset = {
-    labels: [
-      "PROATIVIDADE",
-      "AUTONOMIA",
-      "COLABORAÇÃO",
-      "ENTREGA DE RESULTADOS",
-    ],
+  var dataset = { ...globalDataset, data: dataToDataset };
+
+  const globalLabel = [
+    "PROATIVIDADE",
+    "AUTONOMIA",
+    "COLABORAÇÃO",
+    "ENTREGA DE RESULTADOS",
+  ];
+
+  const dataConfig = {
+    labels: globalLabel,
     datasets: [dataset],
   };
 
-  const config = {
+  const globalConfig = {
     type: "polarArea",
-    data: dataDataset,
+    data: dataConfig,
     options: {
       responsive: true,
       plugins: {
@@ -181,26 +196,44 @@ window.onload = async function () {
     },
   };
 
+  const config = { ...globalConfig, data: dataConfig };
+
   const ctxPolar = document.getElementById("chartPolar");
   const chartPolar = new Chart(ctxPolar, config);
 
   const updateData = async () => {
     ctxPolar.style.display = "none";
     var alunoOpt = alunoSelect.options[alunoSelect.selectedIndex].value;
-    let lista = filterData(dataValores, alunoOpt);
-    dataset["data"] = lista;
+    let dataToDataset = filterData(dataValores, alunoOpt);
+    dataset["data"] = dataToDataset;
     chartPolar.update();
     ctxPolar.style.display = "block";
   };
+
+  function addChartAlunosGrupo(grupo) {
+    const alunosGrupo = getAlunos(grupo);
+    ids = addChartsDinamically(alunosGrupo);
+    ids.forEach((idElement, index) => {
+      let dataToDataset = filterData(dataValores, alunosGrupo[index]);
+      var localData = {
+        labels: globalLabel,
+        datasets: [{ ...globalDataset, data: dataToDataset }],
+      };
+      const locaConfig = { ...globalConfig, data: localData };
+      const ctx = document.getElementById(idElement);
+      new Chart(ctx, locaConfig);
+    });
+  }
 
   const updateDataGrupo = async () => {
     ctxPolar.style.display = "none";
     var grupoOpt = grupoSelect.options[grupoSelect.selectedIndex].value;
     let aluno = getAlunos(grupoOpt)[0];
-    let lista = filterData(dataValores, aluno);
-    dataset["data"] = lista;
+    let dataToDataset = filterData(dataValores, aluno);
+    dataset["data"] = dataToDataset;
     chartPolar.update();
     ctxPolar.style.display = "block";
+    addChartAlunosGrupo(grupoOpt);
   };
 
   alunoSelect.addEventListener("change", updateData);
