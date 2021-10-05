@@ -73,7 +73,7 @@ window.onload = async function () {
     if (extra) {
       var titleAluno = document.createElement("h3");
       titleAluno.innerHTML = extra;
-      titleAluno.style.textAlign = 'center';
+      titleAluno.style.textAlign = "center";
       div.appendChild(titleAluno);
     }
     div.appendChild(innerDiv);
@@ -113,9 +113,9 @@ window.onload = async function () {
     buildSelectValues(alunoSelect, alunos, extra);
   }
 
-  async function getData() {
-    const api = fetch("https://sheetsu.com/apis/v1.0bu/07686c9d8a31");
+  const callApiGrupo = async (url) => {
     let data = {};
+    const api = fetch(url);
     await api
       .then((response) => {
         return response.json();
@@ -132,6 +132,15 @@ window.onload = async function () {
           }
         }
       });
+      return data;
+  };
+
+  async function getData() {
+    var g1 = await callApiGrupo("https://sheetsu.com/apis/v1.0bu/f3b4139258eb");
+    var g2 = await callApiGrupo("https://sheetsu.com/apis/v1.0bu/55ee344befe8");
+    var g3 = await callApiGrupo("https://sheetsu.com/apis/v1.0bu/25de6da64537");
+    var g4 = await callApiGrupo("https://sheetsu.com/apis/v1.0bu/a3cb2f9a94bd");
+    var data = Object.assign({}, g1, g2, g3, g4);
     return data;
   }
 
@@ -206,7 +215,7 @@ window.onload = async function () {
           position: "top",
         },
         title: {
-          display: true
+          display: true,
         },
       },
     },
@@ -228,7 +237,7 @@ window.onload = async function () {
     if (alunoOpt === "todos") {
       addChartAlunosGrupo(grupoOpt);
     } else {
-      globalConfig['options']['plugins']['title']['text'] = alunoOpt;
+      globalConfig["options"]["plugins"]["title"]["text"] = alunoOpt;
       let dataToDataset = filterData(dataValores, alunoOpt);
       dataset["data"] = dataToDataset;
       chartPolar.update();
@@ -245,7 +254,7 @@ window.onload = async function () {
         labels: globalLabel,
         datasets: [{ ...globalDataset, data: dataToDataset }],
       };
-      globalConfig['options']['plugins']['title']['text'] = '';
+      globalConfig["options"]["plugins"]["title"]["text"] = "";
       let locaConfig = { ...globalConfig, data: localData };
       const ctx = document.getElementById(idElement);
       new Chart(ctx, locaConfig);
