@@ -28,7 +28,8 @@
         "Avalie o desempenho dos seguintes membros do grupo quanto a PROATIVIDADE: [Eduardo F. R. Querido]": 2.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a AUTONOMIA: [Eduardo F. R. Querido]": 3.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a COLABORAÇÃO: [Eduardo F. R. Querido]": 3.0,
-        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 2.0
+        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 2.0,
+        "respostas_qtd": 6
     },
     "Sprint 2": {
         "Número da sprint": "Sprint 2",
@@ -59,7 +60,8 @@
         "Avalie o desempenho dos seguintes membros do grupo quanto a PROATIVIDADE: [Eduardo F. R. Querido]": 13.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a AUTONOMIA: [Eduardo F. R. Querido]": 13.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a COLABORAÇÃO: [Eduardo F. R. Querido]": 14.0,
-        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 14.0
+        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 14.0,
+        "respostas_qtd": 6
     },
     "Sprint 3": {
         "Número da sprint": "Sprint 3",
@@ -90,7 +92,8 @@
         "Avalie o desempenho dos seguintes membros do grupo quanto a PROATIVIDADE: [Eduardo F. R. Querido]": 14.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a AUTONOMIA: [Eduardo F. R. Querido]": 16.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a COLABORAÇÃO: [Eduardo F. R. Querido]": 11.0,
-        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 15.0
+        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 15.0,
+        "respostas_qtd": 6
     },
     "Sprint 4": {
         "Número da sprint": "Sprint 4",
@@ -121,6 +124,7 @@
         "Avalie o desempenho dos seguintes membros do grupo quanto a PROATIVIDADE: [Eduardo F. R. Querido]": 2.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a AUTONOMIA: [Eduardo F. R. Querido]": 2.0,
         "Avalie o desempenho dos seguintes membros do grupo quanto a COLABORAÇÃO: [Eduardo F. R. Querido]": 1.0,
-        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 1.0
+        "Avalie o desempenho dos seguintes membros do grupo quanto a ENTREGA DE RESULTADOS: [Eduardo F. R. Querido]": 1.0,
+        "respostas_qtd": 1
     }
 }
