@@ -1,6 +1,5 @@
 # PACER
 **Aplicação:** https://lzeny.csb.app <br/>
-**Questionário Google Forms:** https://forms.gle/RWGJFVQArpKRoUvk6
 
 Os dados alimentado no formulário são utilizadas para gerar os gráficos.
 
